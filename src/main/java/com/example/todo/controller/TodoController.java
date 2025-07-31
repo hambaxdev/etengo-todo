@@ -3,21 +3,45 @@ package com.example.todo.controller;
 import com.example.todo.dto.TodoDto;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
-@Controller
+@CrossOrigin(origins = "http://localhost:5173")
+@RestController
 @RequestMapping("/todo")
 public class TodoController {
 
-    TodoService service;
+    private final TodoService service;
+
+    @Autowired
+    public TodoController(TodoService service) {
+        this.service = service;
+    }
 
     @GetMapping
-    public ArrayList<TodoDto> getTodoListByUserid(@Valid Long userId){
+    public List<TodoDto> getTodoListByUserId(@RequestParam Long userId) {
         return service.getTodoListByUserId(userId);
+    }
+
+    @GetMapping("/{id}")
+    public TodoDto getTodoById(@PathVariable Long id) {
+        return service.getTodoById(id);
+    }
+
+    @PostMapping
+    public TodoDto createTodo(@RequestParam Long userId, @Valid @RequestBody TodoDto todoDto) {
+        return service.addTodo(userId, todoDto);
+    }
+
+    @PutMapping
+    public TodoDto updateTodo(@RequestParam Long userId, @Valid @RequestBody TodoDto todoDto) {
+        return service.updateTodo(userId, todoDto);
+    }
+
+    @DeleteMapping
+    public void deleteTodo(@RequestParam Long userId, @RequestBody TodoDto todoDto) {
+        service.deleteTodo(userId, todoDto);
     }
 }
